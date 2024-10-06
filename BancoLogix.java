@@ -13,13 +13,20 @@ public class BancoLogix extends JFrame {
     private static Map<String, Usuario> usuarios = new HashMap<>();
     private Usuario usuarioActual;
 
+    /**
+    * Constructor de la clase BancoLogix.
+    * Este constructor inicializa la interfaz gráfica del simulador de cajero automático.
+    * La interfaz incluye campos para ingresar el usuario y la contraseña, así como botones
+      para ingresar, registrar y salir. Además, se carga una lista de usuarios predefinidos.
+    */
+
     public BancoLogix() {
         setTitle("Banco Logix");
         setSize(400, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         setLocationRelativeTo(null);
         setLayout(null);
-
+        // Funcion cargar usuarios desde archivo txt
         cargarUsuarios();
 
         // Panel superior
@@ -80,6 +87,22 @@ public class BancoLogix extends JFrame {
         salirButton.addActionListener(e -> System.exit(0));
     }
 
+    /**
+    * Carga los usuarios desde un archivo de texto y los almacena en un mapa.
+    * El archivo debe tener el formato: nombreUsuario,contraseña,saldo,numeroCuenta en cada línea.
+    * 
+    * Variables:
+    * - BufferedReader reader: Se utiliza para leer el archivo "usuarios.txt".
+    * - String linea: Almacena cada línea leída del archivo.
+    * - String[] datos: Almacena los datos de cada usuario separados por comas.
+    * - String nombreUsuario: Almacena el nombre de usuario.
+    * - String contraseña: Almacena la contraseña del usuario.
+    * - double saldo: Almacena el saldo del usuario.
+    * - String numeroCuenta: Almacena el número de cuenta del usuario.
+    * - Usuario usuario: Objeto que representa al usuario con sus datos.
+    * 
+    * @throws IOException Si ocurre un error al leer el archivo. En este caso, se muestra un mensaje de error.
+    */
     private void cargarUsuarios() {
         try (BufferedReader reader = new BufferedReader(new FileReader("usuarios.txt"))) {
             String linea;
@@ -96,7 +119,16 @@ public class BancoLogix extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al cargar usuarios");
         }
     }
-    //Metodo para registrar
+
+     /**
+     * Registra un nuevo usuario en el sistema.
+     * Solicita al usuario que ingrese un nombre de usuario y una contraseña.
+     * Si el nombre de usuario ya existe o los campos están vacíos, muestra un mensaje de error.
+     * Genera un número de cuenta único y asigna un saldo inicial de 0.0 al nuevo usuario.
+     * Guarda el nuevo usuario en el mapa de usuarios y en el archivo correspondiente.
+     * 
+     *  * @throws HeadlessException Si se utiliza en un entorno sin interfaz gráfica.
+     */
     private void registrar() {
         String nuevoUsuario = JOptionPane.showInputDialog(this, "Ingrese nuevo nombre de usuario:");
         if (nuevoUsuario == null || nuevoUsuario.isEmpty()) {
@@ -123,6 +155,14 @@ public class BancoLogix extends JFrame {
         JOptionPane.showMessageDialog(this, "Usuario registrado exitosamente. Su número de cuenta es: " + numeroCuenta);
     }
 
+     /**
+     * Crea un archivo de historial de transacciones para un usuario específico.
+     * El archivo se nombra como "historial_nombreUsuario.txt" y se inicializa con una línea de encabezado.
+     * 
+     * @param usuario El objeto Usuario para el cual se crea el archivo de historial.
+     * 
+     * @throws IOException Si ocurre un error al crear o escribir en el archivo. En este caso, se muestra un mensaje de error.
+     */
     private void crearArchivoHistorial(Usuario usuario) {
         try (FileWriter writer = new FileWriter("historial_" + usuario.getNombreUsuario() + ".txt", true)) {
             writer.write("Historial de transacciones de " + usuario.getNombreUsuario() + "\n");
@@ -131,6 +171,14 @@ public class BancoLogix extends JFrame {
         }
     }
 
+    /**
+     * Guarda la información de un usuario en el archivo de texto "usuarios.txt".
+     * La información se guarda en el formato: nombreUsuario,contraseña,saldo,numeroCuenta en una nueva línea.
+     * 
+     * @param usuario El objeto Usuario cuya información se va a guardar.
+     * 
+     * @throws IOException Si ocurre un error al escribir en el archivo. En este caso, se muestra un mensaje de error.
+     */
     private void guardarUsuarioEnArchivo(Usuario usuario) {
         try (FileWriter writer = new FileWriter("usuarios.txt", true)) {
             writer.write(usuario.getNombreUsuario() + "," + usuario.getContraseña() + "," + usuario.getSaldo() + "," + usuario.getNumeroCuenta() + "\n");
@@ -139,6 +187,12 @@ public class BancoLogix extends JFrame {
         }
     }
 
+    /**
+     * Guarda la información de todos los usuarios en el archivo de texto "usuarios.txt".
+     * La información de cada usuario se guarda en el formato: nombreUsuario,contraseña,saldo,numeroCuenta en una nueva línea.
+     * 
+     * @throws IOException Si ocurre un error al escribir en el archivo. En este caso, se muestra un mensaje de error.
+     */
     private void guardarTodosLosUsuarios() {
         try (FileWriter writer = new FileWriter("usuarios.txt")) {
             for (Usuario usuario : usuarios.values()) {
@@ -149,10 +203,21 @@ public class BancoLogix extends JFrame {
         }
     }
 
+    /**
+    * genera un valor entero aleatorio para asociarlo a un usuario como su numero de cuenta
+    */
     private String generarNumeroCuenta() {
         return String.valueOf((int) (Math.random() * 900000000) + 100000000);
     }
 
+    /**
+     * Verifica las credenciales del usuario y permite el acceso si son correctas.
+     * Obtiene el nombre de usuario y la contraseña de los campos de texto correspondientes.
+     * Si el usuario existe y la contraseña es correcta, establece el usuario actual y abre el menú principal.
+     * Si las credenciales son incorrectas, muestra un mensaje de error.
+     * 
+     * @throws HeadlessException Si se utiliza en un entorno sin interfaz gráfica.
+     */
     private void ingresar() {
         String usuario = usuarioField.getText();
         String contraseña = new String(contraseñaField.getPassword());
@@ -169,7 +234,23 @@ public class BancoLogix extends JFrame {
             JOptionPane.showMessageDialog(this, "Usuario no encontrado");
         }
     }
-    //Metodo para abrir el menu principal
+    
+    /**
+     * Abre la interfaz del menú principal del cajero automático.
+     * Elimina todos los componentes actuales de la ventana y repinta la interfaz.
+     * Configura el título y el tamaño de la ventana.
+     * Muestra la información del usuario actual y proporciona botones para las diferentes operaciones:
+     * - Consultar saldo
+     * - Depositar dinero
+     * - Retirar dinero
+     * - Transferir dinero
+     * - Ver historial
+     * - Salir
+     * 
+     * Cada botón tiene un ActionListener asociado que llama al método correspondiente para realizar la operación.
+     * 
+     * @throws HeadlessException Si se utiliza en un entorno sin interfaz gráfica.
+     */
     private void abrirMenuPrincipal() {
         getContentPane().removeAll();
         repaint();
@@ -223,7 +304,12 @@ public class BancoLogix extends JFrame {
         verHistorialButton.addActionListener(e -> abrirVentanaHistorial());
     }
 
-    // Método para abrir la nueva ventana de saldo
+    /**
+     * Abre una nueva ventana para mostrar el saldo disponible del usuario actual.
+     * La ventana incluye un título, una etiqueta que muestra el saldo y un botón para cerrar la ventana.
+     * 
+     * @throws HeadlessException Si se utiliza en un entorno sin interfaz gráfica.
+     */
     private void abrirVentanaSaldo() {
         JFrame saldoFrame = new JFrame("Consulta de Saldo");
         saldoFrame.setSize(400, 200);
@@ -253,7 +339,12 @@ public class BancoLogix extends JFrame {
         saldoFrame.setVisible(true);
     }
 
-    //Metodo para abrir la ventana de depositar
+    /**
+     * Abre una nueva ventana para permitir al usuario depositar dinero en su cuenta.
+     * La ventana incluye un campo de texto para ingresar la cantidad a depositar y botones para confirmar o cancelar la operación.
+     * 
+     * @throws HeadlessException Si se utiliza en un entorno sin interfaz gráfica.
+     */
     private void abrirVentanaDepositar() {
         JFrame ventanaDeposito = new JFrame("Depositar Dinero");
         ventanaDeposito.setSize(400, 200);
@@ -293,7 +384,12 @@ public class BancoLogix extends JFrame {
         ventanaDeposito.setVisible(true);
     }
 
-    //Metodo para abrir la ventana de retiro
+    /**
+     * Abre una nueva ventana para permitir al usuario retirar dinero de su cuenta.
+     * La ventana incluye un campo de texto para ingresar la cantidad a retirar y botones para confirmar o cancelar la operación.
+     * 
+     * @throws HeadlessException Si se utiliza en un entorno sin interfaz gráfica.
+     */
     private void abrirVentanaRetirar() {
         JFrame ventanaRetiro = new JFrame("Retirar Dinero");
         ventanaRetiro.setSize(400, 200);
@@ -339,7 +435,14 @@ public class BancoLogix extends JFrame {
         ventanaRetiro.setVisible(true);
     }
 
-    // Método para abrir la ventana de transferencia
+    /**
+     * Abre una nueva ventana para permitir al usuario transferir dinero a otra cuenta.
+     * La ventana incluye campos de texto para ingresar el número de cuenta destino y la cantidad a transferir,
+     * así como botones para confirmar o cancelar la operación.
+     * 
+     * @throws HeadlessException Si se utiliza en un entorno sin interfaz gráfica.
+     */
+
     private void abrirVentanaTransferencia() {
         JFrame ventanaTransferencia = new JFrame("Transferir Dinero");
         ventanaTransferencia.setSize(400, 300);
@@ -375,14 +478,20 @@ public class BancoLogix extends JFrame {
         confirmarButton.addActionListener(e -> {
             String numeroCuentaDestino = cuentaDestinoField.getText();
     
-            // Verificar si el número de cuenta destino existe
+            /**
+             *  Verificar si el número de cuenta destino existe
+             */
             Usuario destinatario = buscarUsuarioPorNumeroCuenta(numeroCuentaDestino);
             if (destinatario == null) {
                 JOptionPane.showMessageDialog(ventanaTransferencia, "El número de cuenta destino no existe.");
                 return;
             }
-    
-            double cantidad;
+            
+            /**
+             * La cantidad ingresada no debe ser de un tipo distinto de double
+             * @throws NumberFormatException en caso de que la cantidad sea dsitinta del tipo double
+             */
+             double cantidad;
             try {
                 cantidad = Double.parseDouble(cantidadField.getText());
             } catch (NumberFormatException ex) {
@@ -390,16 +499,24 @@ public class BancoLogix extends JFrame {
                 return;
             }
     
-            // Verificar si el saldo es suficiente
+            /**
+             * Verificar si el saldo es suficiente
+             */ 
             if (cantidad <= usuarioActual.getSaldo()) {
-                // Realizar la transferencia
+                /**
+                 * Realizar la transferencia
+                 */
                 usuarioActual.retirar(cantidad);
                 destinatario.depositar(cantidad);
     
-                // Guardar los cambios de ambos usuarios
+                /**
+                 * Guardar los cambios de ambos usuarios
+                 */
                 guardarTodosLosUsuarios();
     
-                // Registrar en el historial del usuario actual y del destinatario
+                /**
+                 * Registrar en el historial del usuario actual y del destinatario
+                 */
                 registrarHistorial(usuarioActual, "Transferencia a cuenta " + destinatario.getNumeroCuenta(), cantidad);
                 registrarHistorial(destinatario, "Transferencia recibida de cuenta " + usuarioActual.getNumeroCuenta(), cantidad);
     
@@ -413,6 +530,11 @@ public class BancoLogix extends JFrame {
         ventanaTransferencia.setVisible(true);
     }
     
+    /**
+     * busca al usuario por su numero de cuenta mediante un recorrido
+     * @param numeroCuenta
+     * @return al objeto "usuario" en caso de encontrarlo, caso contrario retorna null
+     */
     private Usuario buscarUsuarioPorNumeroCuenta(String numeroCuenta) {
         for (Usuario usuario : usuarios.values()) {
             if (usuario.getNumeroCuenta().equals(numeroCuenta)) {
@@ -422,7 +544,9 @@ public class BancoLogix extends JFrame {
         return null; // Si no se encuentra un usuario con ese número de cuenta
     }
     
-    //Metodo para abrir la ventana de historial
+    /**
+     * Metodo para abrir la ventana de historial
+     */
     private void abrirVentanaHistorial() {
         JFrame ventanaHistorial = new JFrame("Historial de Transacciones");
         ventanaHistorial.setSize(500, 400);
@@ -433,13 +557,17 @@ public class BancoLogix extends JFrame {
         JScrollPane scrollPane = new JScrollPane(historialArea);
         ventanaHistorial.add(scrollPane, BorderLayout.CENTER);
 
-    // Botón para cerrar la ventana de historial
+    /**
+     * Botón para cerrar la ventana de historial
+     */
     JButton cerrarButton = new JButton("Cerrar");
     cerrarButton.setBounds(200, 320, 100, 30); 
     ventanaHistorial.add(cerrarButton, BorderLayout.SOUTH); 
     cerrarButton.addActionListener(e -> ventanaHistorial.dispose()); 
 
-
+        /**
+         * intenta leer el archivo "usuarios.txt", si tiene algun problema al encontrar la ubicacion salta una excepcion
+         */
         try (BufferedReader reader = new BufferedReader(new FileReader("historial_" + usuarioActual.getNombreUsuario() + ".txt"))) {
             String linea;
             StringBuilder historial = new StringBuilder();
@@ -453,7 +581,12 @@ public class BancoLogix extends JFrame {
 
         ventanaHistorial.setVisible(true);
     }
-
+    /**
+     * registra los nuevos cambios hechos por la cuenta o por una cuenta externa
+     * @param usuario 
+     * @param tipoTransaccion
+     * @param cantidad
+     */
     private void registrarHistorial(Usuario usuario, String tipoTransaccion, double cantidad) {
         try (FileWriter writer = new FileWriter("historial_" + usuario.getNombreUsuario() + ".txt", true)) {
             writer.write(tipoTransaccion + ": " + cantidad + " Bs. - Saldo actual: " + usuario.getSaldo() + " Bs.\n");
@@ -461,7 +594,16 @@ public class BancoLogix extends JFrame {
             JOptionPane.showMessageDialog(this, "Error al registrar historial");
         }
     }
-
+    /**
+     * clase principal usuario
+     * tiene un constructor 
+     * metodos para:
+     * -dar su nombre
+     * - dar la contrasenia
+     * - dar su saldo
+     * - dar su numero de cuenta
+     * - actualizar su saldo con el metodo "depositar" y "retirar" 
+     */
     public static class Usuario {
         private String nombreUsuario;
         private String contraseña;
