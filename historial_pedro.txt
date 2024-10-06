@@ -1,0 +1,4 @@
+Historial de transacciones de pedro
+Depósito: 1000.0 Bs. - Saldo actual: 1000.0 Bs.
+Depósito: 500.0 Bs. - Saldo actual: 1500.0 Bs.
+Transferencia recibida de cuenta 626181208: 100.0 Bs. - Saldo actual: 1600.0 Bs.

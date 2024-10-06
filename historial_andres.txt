@@ -1,0 +1,4 @@
+Historial de transacciones de andres
+Depósito: 200.0 Bs. - Saldo actual: 200.0 Bs.
+Retiro: 100.0 Bs. - Saldo actual: 100.0 Bs.
+Transferencia a cuenta 970745655: 100.0 Bs. - Saldo actual: 0.0 Bs.

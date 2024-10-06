@@ -1,0 +1,3 @@
+Historial de transacciones de Carlos
+Depósito: 100.0 Bs. - Saldo actual: 100.0 Bs.
+Retiro: 20.0 Bs. - Saldo actual: 80.0 Bs.
